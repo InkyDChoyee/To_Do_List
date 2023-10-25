@@ -44,20 +44,27 @@ const doneTodo = (todoId) => {
 }   
 
 const updateInput = (e, todoId) => {
-    const todoElem = e.target;
-    const inputText = e.target.innerText;
-    const itemElem = todoElem.parentNode;
+    const todoElem = e.target.parentNode.querySelector('.todo');
+    const inputText = todoElem.innerText;
     const inputElem = document.createElement('input');
     inputElem.value = inputText;
     inputElem.classList.add('update_input');
 
     inputElem.addEventListener('keypress', (e)=>{
         if(e.key === 'Enter') {
-            updateTodo(e.target.value, todoId); // todo 수정
+            updateTodo(e.target.value, todoId);
         }
     })
+
+    todoElem.replaceWith(inputElem);
 }
 
+const updateTodo = (newText, todoId) => {
+    const newTodo = getAllTodo().map(todo => todo.id === todoId ? { ...todo, content: newText } : todo);
+    setTodo(newTodo);
+    setCountItems();
+    fillTodo();
+}
 
 
 const fillTodo = () => {
@@ -80,6 +87,10 @@ const fillTodo = () => {
         updateElem.classList.add('update');
         updateElem.addEventListener('click', (event) => updateInput(event, todo.id));
         updateElem.innerHTML = '✏️';
+
+        const todoTextElem = document.createElement('span');
+        todoTextElem.classList.add('todo');
+        todoTextElem.innerText = todo.content;
 
         const delElem = document.createElement('button');
         delElem.classList.add('del');
