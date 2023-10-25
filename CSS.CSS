@@ -178,9 +178,9 @@ button {
 
 .update_input {
     position: absolute;
-    left: 0;
-    top: 0;
-    width: 590px;
-    height: 2.8rem;
-    margin: 0;
+    width: 99%;
+    height: 2.5rem;
+    border: 2px;
+    border-style: solid;
+    border-color: rgb(148, 167, 253);
 }
