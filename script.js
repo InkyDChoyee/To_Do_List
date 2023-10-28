@@ -66,10 +66,9 @@ const updateInput = (e, todoId) => {
     
     const ClickOtherPlace = (e) => {
         if (!itemElem.contains(e.target) && e.target !== inputElem) {
-            const listItem = document.querySelector('li');
-            const inputElements = listItem.querySelectorAll('input');
+            const inputElements = itemElem.querySelectorAll('input.update_input');
             inputElements.forEach(inputElement => {
-                listItem.removeChild(inputElement);
+                itemElem.removeChild(inputElement);
             });
             document.body.removeEventListener('click', ClickOtherPlace);
         }
@@ -78,6 +77,11 @@ const updateInput = (e, todoId) => {
     inputElem.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             updateTodo(e.target.value, todoId);
+            const inputElements = itemElem.querySelectorAll('input.update_input');
+            inputElements.forEach(inputElement => {
+                itemElem.removeChild(inputElement);
+            });
+            document.body.removeEventListener('click', ClickOtherPlace);
         }
     });
     
