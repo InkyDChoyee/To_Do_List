@@ -7,50 +7,53 @@ const showDone_btnElem = document.querySelector('.showDone_btn');
 const clearDone_btnElem = document.querySelector('.clearDone_btn');
 
 
-let todo = [];
+let todos = [];
 let id = 0;
 
+let nowShowType = 'All';
+const setNowShowType = (newShowType) => nowShowType = newShowType;
 
-const setTodo = (newTodo) => {
-    todo = newTodo;
+
+const setTodos = (newTodos) => {
+    todos = newTodos;
 }
 
-const getAllTodo = () => {
-    return todo;
+const getAllTodos = () => {
+    return todos;
 }
-const getToDo = () => {
-    return todo.filter(todo => todo.isChecked === false);
+const getToDos = () => {
+    return todos.filter(todo => todo.isChecked === false);
 }
-const getDoneTodo = () => {
-    return todo.filter(todo => todo.isChecked === true);
+const getDoneTodos = () => {
+    return todos.filter(todo => todo.isChecked === true);
 }
 
 const setCountItems = () => {
-    const allTodo = getAllTodo();
-    countItemsElem.innerHTML = `${allTodo.length} items`;
+    const allTodos = getAllTodos();
+    countItemsElem.innerHTML = `${allTodos.length} items`;
 }
 
-const addTodo = (text) => {
+const addTodos = (text) => {
     const newId = id++;
-    const newTodo = getAllTodo().concat({id: newId, isCompleted: false, content: text});
-    setTodo(newTodo);
+    const newTodos = getAllTodos().concat({id: newId, isChecked: false, content: text});
+    setTodos(newTodos);
     setCountItems();
-    fillTodo();
+    fillTodos();
 }
 
 const delTodo = (todoId) => {
-    const newTodo = getAllTodo().filter(todo => todo.id !== todoId);
-    setTodo(newTodo);
+    const newTodos = getAllTodos().filter(todo => todo.id !== todoId);
+    setTodos(newTodos);
     setCountItems();
-    fillTodo();
+    fillTodos();
 }
     
 
 const doneTodo = (todoId) => {
-    const newTodo = getAllTodo().map(todo => todo.id === todoId ? {...todo, isChecked:!todo.isChecked} : todo);
-    setTodo(newTodo);
+    const newTodos = getAllTodos().map(todo => todo.id === todoId ? {...todo, isChecked:!todo.isChecked} : todo);
+    setTodos(newTodos);
     setCountItems();
-    fillTodo();
+    fillTodos();
 }   
 
 const updateInput = (e, todoId) => {
@@ -59,18 +62,12 @@ const updateInput = (e, todoId) => {
     const inputElem = document.createElement('input');
     inputElem.value = inputText;
     inputElem.classList.add('update_input');
-
-    const closeInput = () => {
-        todoElem.replaceWith(inputElem);
-    };
-    
     inputElem.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             updateTodo(e.target.value, todoId);
             closeInput();
         }
     });
-    
     
     inputElem.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -81,47 +78,33 @@ const updateInput = (e, todoId) => {
             closeInput();
         }
     });
-
-
+    
+    const closeInput = () => {
+        todoElem.replaceWith(inputElem);
+    };
+        
     todoElem.replaceWith(inputElem);
 }
 
 const updateTodo = (newText, todoId) => {
-    const newTodo = getAllTodo().map(todo => todo.id === todoId ? { ...todo, content: newText } : todo);
-    setTodo(newTodo);
+    const newTodos = getAllTodos().map(todo => todo.id === todoId ? { ...todo, content: newText } : todo);
+    setTodos(newTodos);
     setCountItems();
-    fillTodo();
+    fillTodos();
 }
 
-let nowShowType = 'all';
-const setNowShowType = (newShowType) => nowShowType = newShowType;
-
-const clickShowType = (e) => {
-    const nowBtnElem = e.target;
-    const newShowType = nowBtnElem.dataset.type;
-
-    if(nowShowType === newShowType) return;
-
-    const beforeBtnElem = document.querySelector(`.show-${nowShowType}-btn`);
-    beforeBtnElem = classList.remove('selected');
-
-    nowBtnElem.classList.add('selected');
-    setNowShowType(newShowType);
-
-    fillTodo();
+const clearDoneTodo = () => {
+    const newTodos = getToDos();
+    setTodos(newTodos);
+    setCountItems();
+    fillTodos();
 }
 
-
-
-
-
-const fillTodo = () => {
-    ListElem.innerHTML = '';
-    const allTodo = getAllTodo();
-
-    allTodo.forEach(todo => {
-        const itemElem = document.createElement('li');
+const fillTodo = (todo) => {
+    const itemElem = document.createElement('li');
         itemElem.classList.add('item');
+
+        itemElem.setAttribute('data-id', todo.id);
 
         const checkElem = document.createElement('div');
         checkElem.classList.add('check');
@@ -134,11 +117,8 @@ const fillTodo = () => {
         const updateElem = document.createElement('button');
         updateElem.classList.add('update');
         updateElem.addEventListener('click', (event) => updateInput(event, todo.id));
+        todoElem.innerText = todo.content;
         updateElem.innerHTML = '✏️';
-
-        const todoTextElem = document.createElement('span');
-        todoTextElem.classList.add('todo');
-        todoTextElem.innerText = todo.content;
 
         const delElem = document.createElement('button');
         delElem.classList.add('del');
@@ -152,17 +132,54 @@ const fillTodo = () => {
         
         itemElem.appendChild(checkElem);
         itemElem.appendChild(todoElem);
-        itemElem.appendChild(updateElem);
+        itemElem.appendChild(updateElem);   
         itemElem.appendChild(delElem);
 
         ListElem.appendChild(itemElem);
-    })
+    }
+
+
+const fillTodos = () => {
+    ListElem.innerHTML = '';
+
+    switch (nowShowType) {
+        case 'All':
+            const allTodo = getAllTodos();
+            allTodo.forEach(todo => {fillTodo(todo);});
+            break;
+        case 'ToDo':
+            const ToDo = getToDos();
+            ToDo.forEach(todo => {fillTodo(todo);});
+            break;
+        case 'Done':
+            const DoneTodo = getDoneTodos();
+            DoneTodo.forEach(todo => {fillTodo(todo);});
+            break;
+        default:
+            break;
+    }
+}
+
+
+const clickShowType = (e) => {
+    const nowBtnElem = e.target;
+    const newShowType = nowBtnElem.dataset.type;
+
+    if(nowShowType === newShowType) return;
+
+    const beforeBtnElem = document.querySelector(`.show-${nowShowType}-btn`);
+    beforeBtnElem.classList.remove('selected');
+
+    nowBtnElem.classList.add('selected');
+    setNowShowType(newShowType);
+
+    fillTodos();
 }
 
 const init = () => {
     InputElem.addEventListener('keypress', (e) => {
         if(e.key ==='Enter') {
-            addTodo(e.target.value);
+            addTodos(e.target.value);
             InputElem.value = '';
         }
     })
