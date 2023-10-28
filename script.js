@@ -1,6 +1,10 @@
 const InputElem = document.querySelector('.input');
 const ListElem = document.querySelector('.list');
-const countItemsElem = document.querySelector('.count_items')
+const countItemsElem = document.querySelector('.count_items');
+const showAll_btnElem = document.querySelector('.showAll_btn');
+const showToDo_btnElem = document.querySelector('.showToDo_btn');
+const showDone_btnElem = document.querySelector('.showDone_btn');
+const clearDone_btnElem = document.querySelector('.clearDone_btn');
 
 
 let todo = [];
@@ -13,6 +17,12 @@ const setTodo = (newTodo) => {
 
 const getAllTodo = () => {
     return todo;
+}
+const getToDo = () => {
+    return todo.filter(todo => todo.isChecked === false);
+}
+const getDoneTodo = () => {
+    return todo.filter(todo => todo.isChecked === true);
 }
 
 const setCountItems = () => {
@@ -50,11 +60,28 @@ const updateInput = (e, todoId) => {
     inputElem.value = inputText;
     inputElem.classList.add('update_input');
 
-    inputElem.addEventListener('keypress', (e)=>{
-        if(e.key === 'Enter') {
+    const closeInput = () => {
+        todoElem.replaceWith(inputElem);
+    };
+    
+    inputElem.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
             updateTodo(e.target.value, todoId);
+            closeInput();
         }
-    })
+    });
+    
+    
+    inputElem.addEventListener('click', (e) => {
+        e.stopPropagation();
+    });
+    
+    document.addEventListener('click', (event) => {
+        if (!event.target.classList.contains('update_input')) {
+            closeInput();
+        }
+    });
+
 
     todoElem.replaceWith(inputElem);
 }
@@ -65,6 +92,27 @@ const updateTodo = (newText, todoId) => {
     setCountItems();
     fillTodo();
 }
+
+let nowShowType = 'all';
+const setNowShowType = (newShowType) => nowShowType = newShowType;
+
+const clickShowType = (e) => {
+    const nowBtnElem = e.target;
+    const newShowType = nowBtnElem.dataset.type;
+
+    if(nowShowType === newShowType) return;
+
+    const beforeBtnElem = document.querySelector(`.show-${nowShowType}-btn`);
+    beforeBtnElem = classList.remove('selected');
+
+    nowBtnElem.classList.add('selected');
+    setNowShowType(newShowType);
+
+    fillTodo();
+}
+
+
+
 
 
 const fillTodo = () => {
@@ -118,7 +166,15 @@ const init = () => {
             InputElem.value = '';
         }
     })
+
     setCountItems();
+
+    showAll_btnElem.addEventListener('click', clickShowType);
+    showToDo_btnElem.addEventListener('click', clickShowType);
+    showDone_btnElem.addEventListener('click', clickShowType);
+
+    clearDone_btnElem.addEventListener('click', clearDoneTodo);
+
 }
 
 init()
