@@ -167,7 +167,7 @@ const clickShowType = (e) => {
 
     if(nowShowType === newShowType) return;
 
-    const beforeBtnElem = document.querySelector(`.show-${nowShowType}-btn`);
+    const beforeBtnElem = document.querySelector(`.show${nowShowType}_btn`);
     beforeBtnElem.classList.remove('selected');
 
     nowBtnElem.classList.add('selected');
