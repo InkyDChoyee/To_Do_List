@@ -178,7 +178,7 @@ const clickShowType = (e) => {
 
 const init = () => {
     InputElem.addEventListener('keypress', (e) => {
-        if(e.key ==='Enter') {
+        if(e.key ==='Enter' && e.target.value.trim() !== '') {
             addTodos(e.target.value);
             InputElem.value = '';
         }
