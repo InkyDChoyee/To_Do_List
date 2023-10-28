@@ -59,31 +59,30 @@ const doneTodo = (todoId) => {
 const updateInput = (e, todoId) => {
     const todoElem = e.target.parentNode.querySelector('.todo');
     const inputText = todoElem.innerText;
+    const itemElem = todoElem.parentNode;
     const inputElem = document.createElement('input');
     inputElem.value = inputText;
     inputElem.classList.add('update_input');
+    
+    const ClickOtherPlace = (e) => {
+        if (!itemElem.contains(e.target) && e.target !== inputElem) {
+            const listItem = document.querySelector('li');
+            const inputElements = listItem.querySelectorAll('input');
+            inputElements.forEach(inputElement => {
+                listItem.removeChild(inputElement);
+            });
+            document.body.removeEventListener('click', ClickOtherPlace);
+        }
+    };
+
     inputElem.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             updateTodo(e.target.value, todoId);
-            closeInput();
         }
     });
     
-    inputElem.addEventListener('click', (e) => {
-        e.stopPropagation();
-    });
-    
-    document.addEventListener('click', (event) => {
-        if (!event.target.classList.contains('update_input')) {
-            closeInput();
-        }
-    });
-    
-    const closeInput = () => {
-        todoElem.replaceWith(inputElem);
-    };
-        
-    todoElem.replaceWith(inputElem);
+    document.body.addEventListener('click', ClickOtherPlace);
+    itemElem.appendChild(inputElem);
 }
 
 const updateTodo = (newText, todoId) => {
@@ -117,7 +116,6 @@ const fillTodo = (todo) => {
         const updateElem = document.createElement('button');
         updateElem.classList.add('update');
         updateElem.addEventListener('click', (event) => updateInput(event, todo.id));
-        todoElem.innerText = todo.content;
         updateElem.innerHTML = '✏️';
 
         const delElem = document.createElement('button');
@@ -195,10 +193,3 @@ const init = () => {
 }
 
 init()
-
-
-
-
-
-
-
