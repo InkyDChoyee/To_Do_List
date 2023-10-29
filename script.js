@@ -6,6 +6,18 @@ const showToDo_btnElem = document.querySelector('.showToDo_btn');
 const showDone_btnElem = document.querySelector('.showDone_btn');
 const clearDone_btnElem = document.querySelector('.clearDone_btn');
 
+function saveTodos() {
+    localStorage.setItem('todos', JSON.stringify(todos));
+}
+
+function loadTodos() {
+    const saveTodos = localStorage.getItem('todos');
+    if(saveTodos) {
+        todos = JSON.parse(saveTodos);
+        setCountItems();
+        fillTodos();
+    }
+}
 
 let todos = [];
 let id = 0;
@@ -119,11 +131,13 @@ const fillTodo = (todo) => {
 
         const updateElem = document.createElement('button');
         updateElem.classList.add('update');
+        updateElem.removeEventListener('click', (event) => updateInput(event, todo.id));
         updateElem.addEventListener('click', (event) => updateInput(event, todo.id));
         updateElem.innerHTML = '✏️';
 
         const delElem = document.createElement('button');
         delElem.classList.add('del');
+        delElem.removeEventListener('click', () => delTodo(todo.id));
         delElem.addEventListener('click', () => delTodo(todo.id));
         delElem.innerHTML = '❌'; 
 
@@ -143,7 +157,7 @@ const fillTodo = (todo) => {
 
 const fillTodos = () => {
     ListElem.innerHTML = '';
-
+    saveTodos();
     switch (nowShowType) {
         case 'All':
             const allTodo = getAllTodos();
@@ -183,6 +197,7 @@ const init = () => {
         if(e.key ==='Enter' && e.target.value.trim() !== '') {
             addTodos(e.target.value);
             InputElem.value = '';
+            saveTodos();
         }
     })
 
@@ -194,6 +209,7 @@ const init = () => {
 
     clearDone_btnElem.addEventListener('click', clearDoneTodo);
 
+    loadTodos();
 }
 
 init()
